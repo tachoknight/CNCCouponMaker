@@ -89,12 +89,13 @@ function makeArrow(ipm)
     -- Cut the main arrow line
     writeLine(string.format("G01 X%.2f Y%.2f", width - 0.5, height - 0.5))
     -- Now the left line
-    writeLine(string.format("G01 X%.2f Y%.2f", width - 0.2, height - 4.1))
+    writeLine(string.format("G01 X%.2f Y%.2f", width - 0.5 - 0.2, height - 0.5 - 0.3))
     turnTorchOff()
     -- Go back
     writeLine(string.format("G00 X%.2f Y%.2f", width - 0.5, height - 0.5))
     prepareToCut()
-    writeLine(string.format("G01 X%.2f Y%.2f", width + 1.5, height + 1.5))
+    -- Now the right line
+    writeLine(string.format("G01 X%.2f Y%.2f", width - 0.5 + 0.2, height - 0.5 - 0.3))
 
     turnTorchOff()
 end
