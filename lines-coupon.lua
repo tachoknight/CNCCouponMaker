@@ -7,6 +7,9 @@
 -- Forward declaration for the calculateSize() function below
 its = 0
 
+-- Forward declaration for whether the torch should fire
+dry = 0
+
 -- This is the array that will hold all the generated lines
 lines = {}
 
@@ -18,6 +21,9 @@ lineIncrement = 10
 
 -- The amount of space between the lines
 incrementY = 0.2468
+
+-- The amount of distance between the torch and the material
+cutHeight = 0.092
 
 -------------------------------------------------------------------------------
 -- Helper functions
@@ -57,13 +63,21 @@ function prepareToCut()
     writeLine("G92 Z0.0 (Set Z to 0 again)")         -- Set Z 0 again
     writeLine("G00 Z0.1500 (Move to pierce height)") -- Move to pierce height
     writeLine("M667 (THC ON)")                       -- THC on
-    writeLine("M03 (TORCH ON)")                      -- This turns the torch on
+    if dry ~= 1 then
+        writeLine("M03 (TORCH ON)")                  -- This turns the torch on
+    else
+        writeLine("(DRY RUN - TORCH IS NOT FIRING)")
+    end
     writeLine("G04 P0.0 (Pierce Delay)")             -- Pierce delay
-    writeLine("G00 Z0.0600 (Move to cut height)")    -- Move to cut height
+    writeLine(string.format("G00 Z%.2f (Move to cut height)", cutHeight))    -- Move to cut height
 end
 
 function turnTorchOff()
-    writeLine("M04 (TORCH OFF)") -- Torch off
+    if dry ~= 1 then
+        writeLine("M04 (TORCH OFF)") -- Torch off
+    else
+        writeLine("(DRY RUN - TORCH IS NOT ON)")
+    end
     writeLine("M666 (THC OFF)")  -- THC off
      -- move up
      writeLine("G00 Z1.5000 (Move up and out of the way)")
@@ -150,9 +164,14 @@ io.write("IPM increment: ")
 inc = io.read("*n")
 io.write("Iterations: ")
 its = io.read("*n")
+io.write("Dry run? (Yes=1, No=2):")
+dry = io.read("*n")
 
 -- Repeat it back to the user
 io.write("Writing " .. gauge .. " gauge coupon of " .. len .. "\" length, IPM of " .. ipm .. ", incrementing by " .. inc .. " for " .. its .. " iterations\n")
+if dry == 1 then
+    io.write("This is a DRY RUN (torch will not fire)")
+end
 
 -- Now let's figure out how big this is gonna be and prompt the user to
 -- verify that they have a piece of material big enough for this coupon
