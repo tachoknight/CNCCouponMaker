@@ -142,7 +142,7 @@ end
 -- the machine
 function writePostlude()
     -- Put us back at 0,0
-	writeLine("G0 X0.0000 Y0.0000") -- this is part of the G00 above
+	writeLine("G30 X0.0000 Y0.0000 Z1.5000")
 
 	-- and finish
     writeLine("M04 M30")
